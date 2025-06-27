@@ -492,68 +492,154 @@ body {
 
 /* For tablets and below */
 @media (max-width: 1024px) {
-    .map-and-buttons {
-      flex-direction: column;
-      height: auto;
-    }
-    .map-container {
-      min-height: 400px;
-      width: 100%;
-    }
-    .buttons-container {
-      flex-direction: row;
-      width: 100%;
-      height: auto;
-      padding: 10px;
-      justify-content: space-around;
-    }
-    .location-button {
-      width: 50px;
-      height: 50px;
-    }
+  .map-and-buttons {
+    flex-direction: column;
+    height: auto;
+  }
+  .map-container {
+    min-height: 400px;
+    width: 100%;
+  }
+  .buttons-container {
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    justify-content: space-around;
+  }
+  .location-button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* For small screens (phones) */
+@media (max-width: 600px) {
+  .header {
+    padding: 10px;
+  }
+  .logo h1 {
+    font-size: 18px;
+  }
+  .search-container {
+    max-width: 100%;
+  }
+  #search-input {
+    padding: 10px 40px 10px 40px;
+    font-size: 14px;
+  }
+  .map-and-buttons {
+    flex-direction: column;
+    height: auto;
+  }
+  .buttons-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .location-button {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+  .location-info {
+    width: 95%;
+    padding: 20px;
+  }
+  .location-info h3 {
+    font-size: 20px;
+  }
+}
+
+/* Make the map always fill the container */
+#map {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* Force body and html to fill the viewport */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
   }
   
-  /* For small screens (phones) */
-  @media (max-width: 600px) {
-    .header {
-      padding: 10px;
-    }
-    .logo h1 {
-      font-size: 18px;
-    }
-    .search-container {
-      max-width: 100%;
-    }
-    #search-input {
-      padding: 10px 40px 10px 40px;
-      font-size: 14px;
-    }
-    .map-and-buttons {
-      flex-direction: column;
-      height: auto;
-    }
-    .buttons-container {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .location-button {
-      width: 45px;
-      height: 45px;
-      font-size: 18px;
-    }
-    .location-info {
-      width: 95%;
-      padding: 20px;
-    }
-    .location-info h3 {
-      font-size: 20px;
-    }
+  /* Make main container take all available space */
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    height: calc(100vh - 100px); /* header height + footer */
+    padding: 0;
+    gap: 0;
   }
   
-  /* Make the map always fill the container */
+  /* Ensure map and buttons always fill */
+  .map-and-buttons {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    gap: 0;
+    padding: 0;
+  }
+  
+  /* Make buttons scroll horizontally on small screens */
+  .buttons-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    justify-content: flex-start;
+    align-items: center;
+    background: var(--glass-color);
+  }
+  
+  /* Shrink buttons for mobile */
+  .location-button {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    flex: 0 0 auto;
+  }
+  
+  /* Map always fills */
+  .map-container {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 0;
+  }
+  
+  /* Map itself fills container */
   #map {
     width: 100% !important;
     height: 100% !important;
+  }
+  
+  /* Van panels fill screen width on mobile */
+  .location-info {
+    width: 95%;
+    max-width: 95%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+  
+  /* Footer sticks at the bottom */
+  .copyright {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Reduce padding in header */
+  .header {
+    padding: 10px;
   }
   
