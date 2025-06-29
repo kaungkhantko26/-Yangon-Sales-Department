@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- Primary Meta Tags -->
-<title>Yangon Sales Department | Business Mapping Tool</title>
-<meta name="title" content="Yangon Sales Department | Business Mapping Tool">
-<meta name="description" content="Visualize sales routes across Yangon with this interactive business mapping tool. Search townships, explore van routes, and see detailed locations easily.">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kaungkhantko26.github.io/-Yangon-Sales-Department/">
-<meta property="og:title" content="Yangon Sales Department | Business Mapping Tool">
-<meta property="og:description" content="Visualize sales routes across Yangon with this interactive business mapping tool.">
-<meta property="og:image" content="https://kaungkhantko26.github.io/-Yangon-Sales-Department/logo.png">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yangon Sales Department | Business Mapping Tool</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Visualize sales routes across Yangon with this interactive business mapping tool. Search townships, explore van routes, and see detailed locations easily.">
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
   <!-- Intro Splash Screen -->
-<div id="intro-overlay">
-  <div class="logo-blur-container">
-    <i class="fas fa-map-marked-alt logo-icon"></i>
-    <h1>Yangon Sales Department</h1>
+  <div id="intro-overlay">
+    <div class="logo-blur-container">
+      <i class="fas fa-map-marked-alt logo-icon"></i>
+      <h1>Yangon Sales Department</h1>
+    </div>
   </div>
-</div>
 
   <div class="header">
     <div class="logo">
@@ -34,7 +24,7 @@
     </div>
     <div class="search-container">
       <i class="fas fa-search search-icon"></i>
-      <input type="text" id="search-input" placeholder="Search township or address...">
+      <input type="text" id="search-input" placeholder="Search township or address..." autocomplete="off" />
       <i class="fas fa-times clear-search" id="clear-search"></i>
     </div>
   </div>
@@ -43,29 +33,24 @@
     <div class="map-and-buttons">
       <div class="buttons-container">
         <button class="location-button" data-location="van1">
-          <span>1</span>
-          <div class="button-tooltip">Van Route 1</div>
+          <i class="fas fa-route"></i> <span>Van 1</span>
         </button>
         <button class="location-button" data-location="van2">
-          <span>2</span>
-          <div class="button-tooltip">Van Route 2</div>
+          <i class="fas fa-route"></i> <span>Van 2</span>
         </button>
         <button class="location-button" data-location="van3">
-          <span>3</span>
-          <div class="button-tooltip">Van Route 3</div>
+          <i class="fas fa-route"></i> <span>Van 3</span>
         </button>
         <button class="location-button" data-location="van4">
-          <span>4</span>
-          <div class="button-tooltip">Van Route 4</div>
+          <i class="fas fa-route"></i> <span>Van 4</span>
         </button>
         <button class="location-button" data-location="van5">
-          <span>5</span>
-          <div class="button-tooltip">Van Route 5</div>
+          <i class="fas fa-route"></i> <span>Van 5</span>
         </button>
       </div>
 
       <div class="map-container">
-        <div id="map" style="height:600px;"></div>
+        <div id="map"></div>
 
         <!-- Van Route Panels -->
         <section id="location-info-van1" class="location-info">
@@ -130,12 +115,26 @@
     </div>
   </div>
 
-  <div class="copyright">Business Mapping Tool © 2025 | Build by KaungKhantKo</div>
+  <div class="copyright">Business Mapping Tool © 2025 | Built by KaungKhantKo</div>
 
-  <!-- Google Maps API -->
+  <!-- Google Maps API with Places Library -->
   <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFb2kM068CF2McdkrdjHJivAK9h60Zx6Y&libraries=places&callback=initMap">
-  </script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFb2kM068CF2McdkrdjHJivAK9h60Zx6Y&libraries=places&callback=initMap"></script>
+
+  <!-- Marker Clusterer Library -->
+  <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
+
   <script src="script.js"></script>
+  <script>
+    // Failsafe to hide intro overlay if animation doesn't complete
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const intro = document.getElementById('intro-overlay');
+        if (intro) {
+          intro.style.display = 'none';
+        }
+      }, 5000); // 5 seconds total
+    });
+  </script>
 </body>
 </html>
