@@ -3,6 +3,10 @@ let markers = [];
 let infoWindow;
 let activeButton = null;
 
+let userLocationMarker = null;
+let directionsRenderer = null;
+let directionsService = null;
+
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 16.8409, lng: 96.1735 },
@@ -13,10 +17,16 @@ function initMap() {
   });
 
   infoWindow = new google.maps.InfoWindow();
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    map: map,
+    suppressMarkers: false,
+  });
+  directionsService = new google.maps.DirectionsService();
 
   initSearch();
   initButtons();
   initPanels();
+  getUserLocation();
 
   // Clear search input & markers
   const clearBtn = document.getElementById('clear-search');
@@ -34,11 +44,49 @@ function initMap() {
   });
 }
 
+function getUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        if (userLocationMarker) {
+          userLocationMarker.setMap(null);
+        }
+
+        userLocationMarker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          title: "Your Location",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#00f",
+            fillOpacity: 0.9,
+            strokeColor: "#fff",
+            strokeWeight: 2,
+          },
+        });
+
+        map.setCenter(pos);
+        map.setZoom(14);
+      },
+      () => {
+        alert("Permission denied or error getting location.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
 function initSearch() {
   const searchInput = document.getElementById('search-input');
   const searchBox = new google.maps.places.SearchBox(searchInput);
 
-  // Bias search results to map viewport
   map.addListener('bounds_changed', () => {
     searchBox.setBounds(map.getBounds());
   });
@@ -54,7 +102,6 @@ function initSearch() {
     places.forEach((place) => {
       if (!place.geometry) return;
 
-      // Create marker for each place
       const marker = new google.maps.Marker({
         map,
         position: place.geometry.location,
@@ -62,7 +109,6 @@ function initSearch() {
       });
       markers.push(marker);
 
-      // Open info window on marker click
       marker.addListener('click', () => {
         infoWindow.setContent(
           `<strong>${place.name}</strong><br>${place.formatted_address || ''}`
@@ -70,7 +116,6 @@ function initSearch() {
         infoWindow.open(map, marker);
       });
 
-      // Extend map bounds for each place
       if (place.geometry.viewport) {
         bounds.union(place.geometry.viewport);
       } else {
@@ -94,7 +139,6 @@ function initButtons() {
       activateButton(button);
     });
 
-    // Enable keyboard interaction (Enter or Space)
     button.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -107,18 +151,15 @@ function initButtons() {
 function activateButton(button) {
   const id = button.dataset.location;
 
-  // Remove active state from previous button
   if (activeButton) {
     activeButton.classList.remove('active');
     activeButton.setAttribute('aria-pressed', 'false');
   }
 
-  // Add active state to current button
   button.classList.add('active');
   button.setAttribute('aria-pressed', 'true');
   activeButton = button;
 
-  // Show the corresponding location info panel
   document.querySelectorAll('.location-info').forEach((panel) => {
     panel.style.display = panel.id === `location-info-${id}` ? 'block' : 'none';
     panel.setAttribute('aria-hidden', panel.style.display === 'none' ? 'true' : 'false');
@@ -128,7 +169,6 @@ function activateButton(button) {
 }
 
 function initPanels() {
-  // Close buttons for location info panels
   document.querySelectorAll('.location-info .close-btn').forEach((btn) => {
     btn.setAttribute('aria-label', 'Close panel');
     btn.addEventListener('click', () => {
@@ -144,7 +184,6 @@ function initPanels() {
     });
   });
 
-  // Location lines clickable for searching place
   document.querySelectorAll('.location-line').forEach((line) => {
     line.setAttribute('tabindex', '0');
     line.setAttribute('role', 'button');
@@ -153,7 +192,6 @@ function initPanels() {
       searchPlace(line.dataset.place);
     });
 
-    // Keyboard support
     line.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -182,30 +220,50 @@ function searchPlace(placeName) {
   service.findPlaceFromQuery(
     {
       query: `${placeName}, Yangon, Myanmar`,
-      fields: ['name', 'geometry', 'formatted_address'],
+      fields: ["name", "geometry", "formatted_address"],
     },
     (results, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK && results.length) {
-        clearMarkers();
-
+      if (
+        status === google.maps.places.PlacesServiceStatus.OK &&
+        results.length
+      ) {
         const place = results[0];
-        const marker = new google.maps.Marker({
-          map,
-          position: place.geometry.location,
-          title: place.name,
-        });
-        markers.push(marker);
+        const destination = place.geometry.location;
 
-        infoWindow.setContent(
-          `<strong>${place.name}</strong><br>${place.formatted_address || ''}`
-        );
-        infoWindow.open(map, marker);
+        clearMarkers();
+        directionsRenderer.set("directions", null);
 
-        map.setCenter(place.geometry.location);
-        map.setZoom(15);
+        if (userLocationMarker) {
+          directionsService.route(
+            {
+              origin: userLocationMarker.getPosition(),
+              destination: destination,
+              travelMode: google.maps.TravelMode.DRIVING,
+            },
+            (response, status) => {
+              if (status === "OK") {
+                directionsRenderer.setDirections(response);
+              } else {
+                alert("Directions request failed: " + status);
+              }
+            }
+          );
+        } else {
+          const marker = new google.maps.Marker({
+            map,
+            position: destination,
+            title: place.name,
+          });
+          markers.push(marker);
 
-        // Focus marker for screen readers (optional)
-        google.maps.event.trigger(marker, 'click');
+          infoWindow.setContent(
+            `<strong>${place.name}</strong><br>${place.formatted_address || ""}`
+          );
+          infoWindow.open(map, marker);
+
+          map.setCenter(destination);
+          map.setZoom(15);
+        }
       } else {
         alert(`Could not find: ${placeName}`);
       }
@@ -217,6 +275,9 @@ function clearMarkers() {
   markers.forEach((marker) => marker.setMap(null));
   markers = [];
   infoWindow.close();
+  if (directionsRenderer) {
+    directionsRenderer.set("directions", null);
+  }
 }
 
 // Intro overlay animation removal after finished
@@ -229,7 +290,6 @@ window.addEventListener('load', () => {
   }
 });
 
-// Extra: close location info panel when any location button clicked (optional)
 const locationButtons = document.querySelectorAll('.location-button');
 const locationInfos = document.querySelectorAll('.location-info');
 

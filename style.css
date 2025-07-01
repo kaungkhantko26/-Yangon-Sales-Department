@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --primary-color: #2E3A59;
+  --primary-color: #0048fe;
   --secondary-color: #394867;
   --accent-color: #ff0000;
   --dark-color: #1B1B1B;
-  --light-color: #000000;
-  --glass-color: rgba(255, 255, 255, 0.05);
+  --light-color: #fe0505;
+  --glass-color: rgba(250, 248, 248, 0.05);
   --glass-border: 1px solid rgba(0, 0, 0, 0.08);
   --glass-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
   --glass-blur: blur(12px);
